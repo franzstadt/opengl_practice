@@ -48,7 +48,6 @@ int main()
 
 	GLuint shader_program = LoadShaders("vertex.shader", "fragment.shader");
 
-
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float vertices[] = {
