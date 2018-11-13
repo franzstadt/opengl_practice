@@ -1,15 +1,24 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "shader.h"
 
 #include <iostream>
+
+
+//#include <stdio.h>
+//#include <cstdio>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_WIDTH = 600;
 const unsigned int SCR_HEIGHT = 600;
 
 
@@ -91,8 +100,26 @@ int main()
 	// uncomment this call to draw in wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	/*
+	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+	glm::mat4 trans;
+	trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+	vec = trans * vec;
+	std::cout << vec.x << vec.y << vec.z << std::endl;
+	*/
+
 	// render loop
 	// -----------
+
+	ourShader.use();
+
+	float deg2rad = M_PI / 180.0f;
+
+	glm::mat4 identity(1.0f);
+	glm::mat4 transform_matrix(1.0f);
+	
+	float i = 1.0;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// input
@@ -104,8 +131,30 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		transform_matrix = identity;
+		//scale
+		float scale_value = 0.5f;
+		transform_matrix = glm::scale(transform_matrix, glm::vec3(scale_value, scale_value, scale_value));
+
+		//rotate
+		transform_matrix = glm::rotate(transform_matrix, glm::radians(i), glm::vec3(0.0, 0.0, 1.0));
+
+		//shift
+		i = static_cast<int>(i) % 360;
+		glm::vec3 vec(std::cos(glm::radians(i)), std::sin(glm::radians(i)), 0.0f);
+		transform_matrix = glm::translate(transform_matrix, vec);
+
+		//transform_matrix = glm::translate(transform_matrix, glm::vec3(0.5f, -0.5f, 0.0f));
+		//transform_matrix = glm::rotate(transform_matrix, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		
+
+		
+		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform_matrix));
+		
+		i++;
 		// draw our first triangle
-		ourShader.use();
+		
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// glBindVertexArray(0); // no need to unbind it every time 
@@ -114,6 +163,8 @@ int main()
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		Sleep(10);
 	}
 
 	// optional: de-allocate all resources once they've outlived their purpose:
