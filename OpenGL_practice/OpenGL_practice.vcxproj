@@ -149,6 +149,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.shader" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h" />
+    <ClInclude Include="terrain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
