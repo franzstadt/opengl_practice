@@ -1,4 +1,32 @@
 #pragma once
 #include <string>
 
-GLuint LoadShaders(const std::string& vertex_file_path, const std::string& fragment_file_path);//(const char * vertex_file_path,const char * fragment_file_path);
+class Shader
+{
+public:
+	unsigned int ID;
+	// constructor generates the shader on the fly
+	// ------------------------------------------------------------------------
+	Shader(const char* vertexPath, const char* fragmentPath);
+
+	// activate the shader
+	// ------------------------------------------------------------------------
+	void use();
+	
+	// utility uniform functions
+	// ------------------------------------------------------------------------
+	void setBool(const std::string &name, bool value) const;
+
+	// ------------------------------------------------------------------------
+	void setInt(const std::string &name, int value) const;
+	
+	// ------------------------------------------------------------------------
+	void setFloat(const std::string &name, float value) const;
+	
+
+private:
+	// utility function for checking shader compilation/linking errors.
+	// ------------------------------------------------------------------------
+	void checkCompileErrors(unsigned int shader, std::string type);
+	
+};
