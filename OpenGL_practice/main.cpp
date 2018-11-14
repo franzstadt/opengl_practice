@@ -9,6 +9,7 @@
 #include "shader.h"
 
 #include <iostream>
+#include <vector>
 
 
 //#include <stdio.h>
@@ -58,13 +59,23 @@ int main()
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
-	float vertices[] = 
+	/*float vertices[] = 
 	{
 	 0.5f,  0.5f, 0.0f,  // top right
 	 0.5f, -0.5f, 0.0f,  // bottom right
 	-0.5f, -0.5f, 0.0f,  // bottom left
 	-0.5f,  0.5f, 0.0f   // top left 
 	};
+	*/
+
+	float rectangle_vertices[] =
+	{
+		100.0f, 100.0f, 0.0f,
+		100.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 100.0f, 0.0f
+	};
+
 
 	unsigned int indices[] = 
 	{  // note that we start from 0!
@@ -80,7 +91,7 @@ int main()
 	glBindVertexArray(VAO);
 	// copy our vertices array in a buffer for OpenGL to use
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -88,6 +99,8 @@ int main()
 	//then set our vertex attributes pointers
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -117,8 +130,26 @@ int main()
 
 	glm::mat4 identity(1.0f);
 	glm::mat4 transform_matrix(1.0f);
+	glm::mat4 model_to_device_matrix(1.0f);
 	
-	float i = 1.0;
+
+	model_to_device_matrix = glm::scale(identity, glm::vec3(1.0f / 200.0f, 1.0f / 200.0f, 1.0f / 200.0f));
+
+	glm::mat4 camera_matrix(1.0f);
+
+	camera_matrix = glm::rotate(identity, glm::radians(20.f), glm::vec3(1.0f, 0.0f, 0.0f));
+	camera_matrix = glm::rotate(identity, glm::radians(60.f), glm::vec3(0.0f, 1.0f, 0.0f)) * camera_matrix;
+
+	std::vector<glm::vec3> square_base_vecs = { glm::vec3(50.0f,0.0f,0.0f),
+												glm::vec3(0.0f,50.0f,0.0f),
+												glm::vec3(0.0f,0.0f,50.0f),
+												glm::vec3(-50.0f,0.0f,0.0f),
+												glm::vec3(0.0f,-50.0f,0.0f),
+												glm::vec3(0.0f,0.0f,-50.0f) };
+
+
+	float i = 1.0f;
+	glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -131,7 +162,15 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		transform_matrix = identity;
+		//transform_matrix = identity;
+
+		
+
+		
+
+		//transform_matrix = glm::rotate(transform_matrix, glm::radians(20), glm::vec3(1.0, 0.0, 0.0));
+
+		/*
 		//scale
 		float scale_value = 0.5f;
 		transform_matrix = glm::scale(transform_matrix, glm::vec3(scale_value, scale_value, scale_value));
@@ -147,16 +186,25 @@ int main()
 		//transform_matrix = glm::translate(transform_matrix, glm::vec3(0.5f, -0.5f, 0.0f));
 		//transform_matrix = glm::rotate(transform_matrix, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 		
-
+		*/
 		
-		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform_matrix));
+		
 		
 		i++;
 		// draw our first triangle
 		
-		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		for (const auto& vec : square_base_vecs)
+		{
+			transform_matrix = model_to_device_matrix * camera_matrix;
+
+			transform_matrix = transform_matrix * glm::translate(identity, vec);
+
+			unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform_matrix));
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+		
 		// glBindVertexArray(0); // no need to unbind it every time 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

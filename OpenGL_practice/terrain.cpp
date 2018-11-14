@@ -7,7 +7,7 @@ void terrain::set_size(int size)
 
 void terrain::set(int i, int j, float v)
 {
-	_points
+	//_points
 }
 
 terrain::terrain()
