@@ -70,12 +70,13 @@ int main()
 
 	float rectangle_vertices[] =
 	{
-		100.0f, 100.0f, 0.0f,
-		100.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.0f,
-		0.0f, 100.0f, 0.0f
+		50.0f, 50.0f, 0.0f,
+		50.0f, -50.0f, 0.0f,
+		-50.0f, -50.0f, 0.0f,
+		-50.0f, 50.0f, 0.0f
 	};
 
+	glm::vec3 pivot_vector(0, 0, 50);
 
 	unsigned int indices[] = 
 	{  // note that we start from 0!
@@ -129,7 +130,6 @@ int main()
 	float deg2rad = M_PI / 180.0f;
 
 	glm::mat4 identity(1.0f);
-	glm::mat4 transform_matrix(1.0f);
 	glm::mat4 model_to_device_matrix(1.0f);
 	
 
@@ -138,7 +138,7 @@ int main()
 	glm::mat4 camera_matrix(1.0f);
 
 	camera_matrix = glm::rotate(identity, glm::radians(20.f), glm::vec3(1.0f, 0.0f, 0.0f));
-	camera_matrix = glm::rotate(identity, glm::radians(60.f), glm::vec3(0.0f, 1.0f, 0.0f)) * camera_matrix;
+	camera_matrix = glm::rotate(identity, glm::radians(10.f), glm::vec3(0.0f, 1.0f, 0.0f)) * camera_matrix;
 
 	std::vector<glm::vec3> square_base_vecs = { glm::vec3(50.0f,0.0f,0.0f),
 												glm::vec3(0.0f,50.0f,0.0f),
@@ -175,13 +175,7 @@ int main()
 		float scale_value = 0.5f;
 		transform_matrix = glm::scale(transform_matrix, glm::vec3(scale_value, scale_value, scale_value));
 
-		//rotate
-		transform_matrix = glm::rotate(transform_matrix, glm::radians(i), glm::vec3(0.0, 0.0, 1.0));
-
-		//shift
-		i = static_cast<int>(i) % 360;
-		glm::vec3 vec(std::cos(glm::radians(i)), std::sin(glm::radians(i)), 0.0f);
-		transform_matrix = glm::translate(transform_matrix, vec);
+		
 
 		//transform_matrix = glm::translate(transform_matrix, glm::vec3(0.5f, -0.5f, 0.0f));
 		//transform_matrix = glm::rotate(transform_matrix, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -195,7 +189,44 @@ int main()
 		
 		for (const auto& vec : square_base_vecs)
 		{
-			transform_matrix = model_to_device_matrix * camera_matrix;
+			glm::vec3 x = glm::cross(vec, pivot_vector);
+
+			int scalar_product = glm::dot(pivot_vector, vec);
+
+			/// animate
+		//scale
+			float scale_value = 0.5f;
+			i = static_cast<int>(i) % 360;
+			glm::vec3 vec(std::cos(glm::radians(i)), std::sin(glm::radians(i)), 0.0f);
+
+
+			glm::mat4 anim_matrix =
+				  glm::scale(identity, glm::vec3(scale_value, scale_value, scale_value))
+				* glm::translate(identity, 100.f*vec)
+				* glm::rotate(identity, glm::radians(-i), glm::vec3(0.0, 0.0, 1.0));
+
+
+	
+			glm::mat4 transform_matrix;
+
+			glm::mat4 model_cam = model_to_device_matrix * camera_matrix * anim_matrix;
+
+			switch (scalar_product)
+			{
+				case 0: transform_matrix = model_cam * glm::rotate(identity, glm::radians(90.0f), x)*glm::translate(identity, pivot_vector); break;
+				default:
+				{
+					if (scalar_product < 0)
+					{
+						transform_matrix = model_cam * glm::rotate(identity, glm::radians(180.0f), glm::vec3(1,0,0))*glm::translate(identity, pivot_vector); break;
+					}
+					else
+					{
+						transform_matrix = model_cam * glm::translate(identity, pivot_vector); break;
+					}
+				}
+			}
+			
 
 			transform_matrix = transform_matrix * glm::translate(identity, vec);
 
@@ -205,6 +236,8 @@ int main()
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 		
+
+
 		// glBindVertexArray(0); // no need to unbind it every time 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
