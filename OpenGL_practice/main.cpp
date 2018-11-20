@@ -230,8 +230,7 @@ int main()
 
 			transform_matrix = transform_matrix * glm::translate(identity, vec);
 
-			unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform_matrix));
+			ourShader.setMatrix4("transform", transform_matrix);
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}

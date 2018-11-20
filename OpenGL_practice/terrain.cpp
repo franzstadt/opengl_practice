@@ -1,6 +1,6 @@
 #include "terrain.h"
 
-void Terrain::set_size(int size)
+void Terrain::setSize(int size)
 {
 	_points = decltype(_points)(size*size, 0.0f);
 }

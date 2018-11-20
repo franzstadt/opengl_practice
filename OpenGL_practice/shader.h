@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
+#include "glm/fwd.hpp"
 
 class Shader
 {
 public:
-	unsigned int ID;
+	unsigned int _ID;
 	// constructor generates the shader on the fly
 	// ------------------------------------------------------------------------
 	Shader(const char* vertexPath, const char* fragmentPath);
@@ -22,6 +23,9 @@ public:
 	
 	// ------------------------------------------------------------------------
 	void setFloat(const std::string &name, float value) const;
+
+	// ------------------------------------------------------------------------
+	void setMatrix4(const std::string& name, const glm::mat4& value) const;
 	
 
 private:
