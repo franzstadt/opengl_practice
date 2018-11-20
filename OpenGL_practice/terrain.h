@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-class terrain
+class Terrain
 {
 	std::vector<float> _points;
 	int m_size;
@@ -12,6 +12,6 @@ class terrain
 
 public:
 	
-	terrain();
+	Terrain();
 };
 
