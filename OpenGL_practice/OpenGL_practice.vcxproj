@@ -150,6 +150,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="terrain.cpp" />
+    <ClCompile Include="TriangleMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.shader" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="shader.h" />
     <ClInclude Include="terrain.h" />
+    <ClInclude Include="TriangleMesh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
