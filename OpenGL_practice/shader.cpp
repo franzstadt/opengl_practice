@@ -89,6 +89,13 @@ void Shader::setMatrix4(const std::string& name, const glm::mat4& value) const
 	glUniformMatrix4fv(glGetUniformLocation(_ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
+void Shader::setColor(float red, float green, float blue)
+{
+	int vertexColorLocation = glGetUniformLocation(_ID, "ourColor");
+	use();
+	glUniform4f(vertexColorLocation, red, green, blue, 1.0f);
+}
+
 
 void Shader::checkCompileErrors(unsigned int shader, std::string type)
 {

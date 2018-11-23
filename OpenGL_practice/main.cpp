@@ -197,6 +197,10 @@ int main()
 
 			ourShader.setMatrix4("transform", transform_matrix);
 
+			float timeValue = glfwGetTime();
+			float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+			ourShader.setColor(0.0f, greenValue, 0.0f);
+
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			rectangle.render();
 		}

@@ -26,6 +26,8 @@ public:
 
 	// ------------------------------------------------------------------------
 	void setMatrix4(const std::string& name, const glm::mat4& value) const;
+
+	void setColor(float red, float green, float blue);
 	
 
 private:
