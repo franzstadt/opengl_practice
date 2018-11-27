@@ -14,3 +14,7 @@ Terrain::Terrain()
 {
 	
 }
+
+void Terrain::generateRandom(int count) {
+
+}

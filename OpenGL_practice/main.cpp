@@ -28,6 +28,8 @@ const unsigned int SCR_HEIGHT = 600;
 
 int main()
 {
+	//srand(time())
+
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -79,10 +81,17 @@ int main()
 		-50.0f, 50.0f, 0.0f
 		});
 
-	rectangle.addTriangle(0, 1, 3);
-	rectangle.addTriangle(1, 2, 3);
+	rectangle.setUVs({
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f,
+		0.0f, 1.0f
+		});
 
-	rectangle.finalize();
+	rectangle.addTriangle(0, 1, 3, 0, 1, 3);
+	rectangle.addTriangle(1, 2, 3, 1, 2, 3);
+
+	rectangle.setTexture("Resources/rect_texture.jpg");
 
 
 	glm::vec3 pivot_vector(0, 0, 50);
@@ -102,8 +111,13 @@ int main()
 
 	glm::mat4 camera_matrix(1.0f);
 
+	float fov = 30.f;
+//	glm::mat4 projection = glm::perspective(glm::radians(fov), 600.0f / 600.0f, 0.1f, 10.0f) * glm::translate(identity, glm::vec3(30.f, 0.f, -30.f));
+
 	camera_matrix = glm::rotate(identity, glm::radians(20.f), glm::vec3(1.0f, 0.0f, 0.0f));
 	camera_matrix = glm::rotate(identity, glm::radians(10.f), glm::vec3(0.0f, 1.0f, 0.0f)) * camera_matrix;
+
+
 
 	std::vector<glm::vec3> square_base_vecs = { glm::vec3(50.0f,0.0f,0.0f),
 												glm::vec3(0.0f,50.0f,0.0f),
@@ -166,9 +180,10 @@ int main()
 
 
 			glm::mat4 anim_matrix =
-				  glm::scale(identity, glm::vec3(scale_value, scale_value, scale_value))
+				glm::scale(identity, glm::vec3(scale_value, scale_value, scale_value))
 				* glm::translate(identity, 100.f*vec)
 				* glm::rotate(identity, glm::radians(-i), glm::vec3(0.0, 0.0, 1.0));
+//				* glm::rotate(identity, glm::radians(-i), glm::vec3(0.0, 1.0, 0.0));
 
 
 	
@@ -201,7 +216,7 @@ int main()
 			float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 			ourShader.setColor(0.0f, greenValue, 0.0f);
 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			rectangle.render();
 		}
 		
